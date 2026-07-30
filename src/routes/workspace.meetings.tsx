@@ -1,9 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-import { ToolPlaceholder } from "@/components/workspace/ToolPlaceholder";
-import { workspaceTools } from "@/lib/tools";
-
-const tool = workspaceTools[1];
+import { MeetingSummarizer } from "@/components/tool/MeetingSummarizer";
 
 export const Route = createFileRoute("/workspace/meetings")({
   head: () => ({
@@ -21,5 +18,5 @@ export const Route = createFileRoute("/workspace/meetings")({
       },
     ],
   }),
-  component: () => <ToolPlaceholder tool={tool} />,
+  component: MeetingSummarizer,
 });

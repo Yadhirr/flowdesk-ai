@@ -18,5 +18,5 @@ export const Route = createFileRoute("/workspace/email")({
       },
     ],
   }),
-  component: () => <ToolPlaceholder tool={tool} />,
+  component: EmailGenerator,
 });
