@@ -39,8 +39,9 @@ type Task = {
 
 type TaskErrors = { name?: string; duration?: string };
 
+let taskSeq = 0;
 const newTask = (): Task => ({
-  id: crypto.randomUUID(),
+  id: `task-${++taskSeq}`,
   name: "",
   description: "",
   deadline: "",
@@ -475,7 +476,7 @@ export function TaskPlanner() {
               <Button
                 variant="outline"
                 onClick={() => {
-                  setTasks(EXAMPLE_TASKS.map((t) => ({ ...t, id: crypto.randomUUID() })));
+                  setTasks(EXAMPLE_TASKS.map((t) => ({ ...t, id: `task-${++taskSeq}` })));
                   setPeriod("Daily");
                   setStart("09:00");
                   setEnd("17:00");
