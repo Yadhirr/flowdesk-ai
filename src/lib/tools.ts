@@ -14,6 +14,7 @@ export type WorkspaceTool = {
   to: string;
   icon: LucideIcon;
   summary: string;
+  benefit: string;
   capabilities: string[];
 };
 
