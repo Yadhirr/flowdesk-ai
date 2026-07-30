@@ -19,5 +19,5 @@ export const Route = createFileRoute("/workspace/chat")({
       },
     ],
   }),
-  component: () => <ToolPlaceholder tool={tool} />,
+  component: WorkplaceChat,
 });

@@ -19,5 +19,5 @@ export const Route = createFileRoute("/workspace/research")({
       },
     ],
   }),
-  component: () => <ToolPlaceholder tool={tool} />,
+  component: ResearchAssistant,
 });
