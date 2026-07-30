@@ -4,6 +4,8 @@ import { BrandMark } from "@/components/layout/BrandMark";
 import { workspaceTools } from "@/lib/tools";
 
 export function SiteFooter() {
+  const year = new Date().getFullYear();
+
   return (
     <footer className="border-t border-border bg-surface">
       <div className="page-container grid gap-8 py-10 sm:grid-cols-2 lg:grid-cols-3">
@@ -61,11 +63,12 @@ export function SiteFooter() {
       </div>
 
       <div className="border-t border-border">
-        <div className="page-container py-5">
+        <div className="page-container grid gap-2 py-5 sm:flex sm:items-center sm:justify-between">
           <p className="text-xs text-muted-foreground">
-            FlowDesk AI — foundation build. Tool experiences are previews and do not yet generate
-            content.
+            FlowDesk AI — a student project created for educational purposes. Not a commercial
+            product.
           </p>
+          <p className="text-xs text-muted-foreground">© {year} FlowDesk AI</p>
         </div>
       </div>
     </footer>

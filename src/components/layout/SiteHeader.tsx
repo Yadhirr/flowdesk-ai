@@ -8,9 +8,10 @@ import { BrandMark } from "@/components/layout/BrandMark";
 import { workspaceTools } from "@/lib/tools";
 
 const primaryLinks = [
-  { label: "Workspace", to: "/workspace" },
-  { label: "Responsible AI", to: "/responsible-ai" },
-];
+  { label: "Features", to: "/", hash: "features" },
+  { label: "How It Works", to: "/", hash: "how-it-works" },
+  { label: "Responsible AI", to: "/responsible-ai", hash: undefined },
+] as const;
 
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
@@ -28,16 +29,16 @@ export function SiteHeader() {
         <nav className="hidden items-center gap-1 md:flex">
           {primaryLinks.map((link) => (
             <Link
-              key={link.to}
+              key={link.label}
               to={link.to}
-              activeProps={{ className: "bg-secondary text-secondary-foreground" }}
+              hash={link.hash}
               className="rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-secondary hover:text-secondary-foreground"
             >
               {link.label}
             </Link>
           ))}
           <Button asChild size="sm" className="ml-2">
-            <Link to="/workspace">Open workspace</Link>
+            <Link to="/workspace">Open My Workspace</Link>
           </Button>
         </nav>
 
@@ -58,11 +59,11 @@ export function SiteHeader() {
               <nav className="flex flex-col gap-1">
                 {primaryLinks.map((link) => (
                   <Link
-                    key={link.to}
+                    key={link.label}
                     to={link.to}
+                    hash={link.hash}
                     onClick={() => setOpen(false)}
-                    activeProps={{ className: "bg-secondary text-secondary-foreground" }}
-                    className="rounded-md px-3 py-2.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-secondary"
+                    className="rounded-md px-3 py-3 text-sm font-medium text-muted-foreground transition-colors hover:bg-secondary"
                   >
                     {link.label}
                   </Link>
@@ -79,7 +80,7 @@ export function SiteHeader() {
                     to={tool.to}
                     onClick={() => setOpen(false)}
                     activeProps={{ className: "bg-secondary text-secondary-foreground" }}
-                    className="flex items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-secondary"
+                    className="flex items-center gap-3 rounded-md px-3 py-3 text-sm font-medium text-muted-foreground transition-colors hover:bg-secondary"
                   >
                     <tool.icon className="size-4 shrink-0 text-accent" />
                     <span className="truncate">{tool.name}</span>
@@ -88,7 +89,7 @@ export function SiteHeader() {
               </div>
 
               <Button asChild onClick={() => setOpen(false)}>
-                <Link to="/workspace">Open workspace</Link>
+                <Link to="/workspace">Open My Workspace</Link>
               </Button>
             </div>
           </SheetContent>
