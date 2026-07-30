@@ -27,6 +27,8 @@ export const workspaceTools: WorkspaceTool[] = [
     icon: Mail,
     summary:
       "Draft clear, professional workplace emails with a consistent tone, structure and level of formality.",
+    benefit:
+      "Send consistent, professional messages without rewriting the same email each week.",
     capabilities: [
       "Choose tone, audience and length",
       "Reply, follow-up and announcement formats",
@@ -41,6 +43,8 @@ export const workspaceTools: WorkspaceTool[] = [
     icon: FileText,
     summary:
       "Turn long meeting notes and transcripts into concise summaries, decisions and action items.",
+    benefit:
+      "Leave every meeting with clear decisions and owner-tagged next steps.",
     capabilities: [
       "Key points and decisions",
       "Owner-tagged action items",
@@ -55,6 +59,8 @@ export const workspaceTools: WorkspaceTool[] = [
     icon: CalendarClock,
     summary:
       "Break objectives into ordered tasks with realistic sequencing, priorities and time estimates.",
+    benefit:
+      "See a realistic order of work instead of an overwhelming task list.",
     capabilities: [
       "Priority and effort suggestions",
       "Daily and weekly schedule views",
@@ -69,6 +75,8 @@ export const workspaceTools: WorkspaceTool[] = [
     icon: Search,
     summary:
       "Gather background on a topic, compare options and produce structured briefing notes.",
+    benefit:
+      "Understand lengthy material faster, with points you can check yourself.",
     capabilities: [
       "Structured topic briefs",
       "Comparison tables for options",
@@ -77,12 +85,14 @@ export const workspaceTools: WorkspaceTool[] = [
   },
   {
     id: "chat",
-    name: "Workplace Chatbot",
+    name: "AI Workplace Chatbot",
     shortName: "Chat",
     to: "/workspace/chat",
     icon: MessagesSquare,
     summary:
       "A multi-turn assistant that keeps context across a conversation for day-to-day work questions.",
+    benefit:
+      "Get day-to-day workplace guidance without losing the thread of the conversation.",
     capabilities: [
       "Multi-turn conversation memory",
       "Context carried between tools",
