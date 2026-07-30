@@ -10,33 +10,133 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ResponsibleAiRouteImport } from './routes/responsible-ai'
+import { Route as WorkspaceRouteImport } from './routes/workspace'
+import { Route as WorkspaceIndexRouteImport } from './routes/workspace.index'
+import { Route as WorkspaceChatRouteImport } from './routes/workspace.chat'
+import { Route as WorkspaceEmailRouteImport } from './routes/workspace.email'
+import { Route as WorkspaceMeetingsRouteImport } from './routes/workspace.meetings'
+import { Route as WorkspacePlannerRouteImport } from './routes/workspace.planner'
+import { Route as WorkspaceResearchRouteImport } from './routes/workspace.research'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ResponsibleAiRoute = ResponsibleAiRouteImport.update({
+  id: '/responsible-ai',
+  path: '/responsible-ai',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const WorkspaceRoute = WorkspaceRouteImport.update({
+  id: '/workspace',
+  path: '/workspace',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const WorkspaceIndexRoute = WorkspaceIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => WorkspaceRoute,
+} as any)
+const WorkspaceChatRoute = WorkspaceChatRouteImport.update({
+  id: '/chat',
+  path: '/chat',
+  getParentRoute: () => WorkspaceRoute,
+} as any)
+const WorkspaceEmailRoute = WorkspaceEmailRouteImport.update({
+  id: '/email',
+  path: '/email',
+  getParentRoute: () => WorkspaceRoute,
+} as any)
+const WorkspaceMeetingsRoute = WorkspaceMeetingsRouteImport.update({
+  id: '/meetings',
+  path: '/meetings',
+  getParentRoute: () => WorkspaceRoute,
+} as any)
+const WorkspacePlannerRoute = WorkspacePlannerRouteImport.update({
+  id: '/planner',
+  path: '/planner',
+  getParentRoute: () => WorkspaceRoute,
+} as any)
+const WorkspaceResearchRoute = WorkspaceResearchRouteImport.update({
+  id: '/research',
+  path: '/research',
+  getParentRoute: () => WorkspaceRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/responsible-ai': typeof ResponsibleAiRoute
+  '/workspace': typeof WorkspaceRouteWithChildren
+  '/workspace/chat': typeof WorkspaceChatRoute
+  '/workspace/email': typeof WorkspaceEmailRoute
+  '/workspace/meetings': typeof WorkspaceMeetingsRoute
+  '/workspace/planner': typeof WorkspacePlannerRoute
+  '/workspace/research': typeof WorkspaceResearchRoute
+  '/workspace/': typeof WorkspaceIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/responsible-ai': typeof ResponsibleAiRoute
+  '/workspace/chat': typeof WorkspaceChatRoute
+  '/workspace/email': typeof WorkspaceEmailRoute
+  '/workspace/meetings': typeof WorkspaceMeetingsRoute
+  '/workspace/planner': typeof WorkspacePlannerRoute
+  '/workspace/research': typeof WorkspaceResearchRoute
+  '/workspace': typeof WorkspaceIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/responsible-ai': typeof ResponsibleAiRoute
+  '/workspace': typeof WorkspaceRouteWithChildren
+  '/workspace/chat': typeof WorkspaceChatRoute
+  '/workspace/email': typeof WorkspaceEmailRoute
+  '/workspace/meetings': typeof WorkspaceMeetingsRoute
+  '/workspace/planner': typeof WorkspacePlannerRoute
+  '/workspace/research': typeof WorkspaceResearchRoute
+  '/workspace/': typeof WorkspaceIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/responsible-ai'
+    | '/workspace'
+    | '/workspace/chat'
+    | '/workspace/email'
+    | '/workspace/meetings'
+    | '/workspace/planner'
+    | '/workspace/research'
+    | '/workspace/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/responsible-ai'
+    | '/workspace/chat'
+    | '/workspace/email'
+    | '/workspace/meetings'
+    | '/workspace/planner'
+    | '/workspace/research'
+    | '/workspace'
+  id:
+    | '__root__'
+    | '/'
+    | '/responsible-ai'
+    | '/workspace'
+    | '/workspace/chat'
+    | '/workspace/email'
+    | '/workspace/meetings'
+    | '/workspace/planner'
+    | '/workspace/research'
+    | '/workspace/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ResponsibleAiRoute: typeof ResponsibleAiRoute
+  WorkspaceRoute: typeof WorkspaceRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
@@ -48,22 +148,92 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/responsible-ai': {
+      id: '/responsible-ai'
+      path: '/responsible-ai'
+      fullPath: '/responsible-ai'
+      preLoaderRoute: typeof ResponsibleAiRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/workspace': {
+      id: '/workspace'
+      path: '/workspace'
+      fullPath: '/workspace'
+      preLoaderRoute: typeof WorkspaceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/workspace/': {
+      id: '/workspace/'
+      path: '/'
+      fullPath: '/workspace/'
+      preLoaderRoute: typeof WorkspaceIndexRouteImport
+      parentRoute: typeof WorkspaceRoute
+    }
+    '/workspace/chat': {
+      id: '/workspace/chat'
+      path: '/chat'
+      fullPath: '/workspace/chat'
+      preLoaderRoute: typeof WorkspaceChatRouteImport
+      parentRoute: typeof WorkspaceRoute
+    }
+    '/workspace/email': {
+      id: '/workspace/email'
+      path: '/email'
+      fullPath: '/workspace/email'
+      preLoaderRoute: typeof WorkspaceEmailRouteImport
+      parentRoute: typeof WorkspaceRoute
+    }
+    '/workspace/meetings': {
+      id: '/workspace/meetings'
+      path: '/meetings'
+      fullPath: '/workspace/meetings'
+      preLoaderRoute: typeof WorkspaceMeetingsRouteImport
+      parentRoute: typeof WorkspaceRoute
+    }
+    '/workspace/planner': {
+      id: '/workspace/planner'
+      path: '/planner'
+      fullPath: '/workspace/planner'
+      preLoaderRoute: typeof WorkspacePlannerRouteImport
+      parentRoute: typeof WorkspaceRoute
+    }
+    '/workspace/research': {
+      id: '/workspace/research'
+      path: '/research'
+      fullPath: '/workspace/research'
+      preLoaderRoute: typeof WorkspaceResearchRouteImport
+      parentRoute: typeof WorkspaceRoute
+    }
   }
 }
 
+interface WorkspaceRouteChildren {
+  WorkspaceChatRoute: typeof WorkspaceChatRoute
+  WorkspaceEmailRoute: typeof WorkspaceEmailRoute
+  WorkspaceMeetingsRoute: typeof WorkspaceMeetingsRoute
+  WorkspacePlannerRoute: typeof WorkspacePlannerRoute
+  WorkspaceResearchRoute: typeof WorkspaceResearchRoute
+  WorkspaceIndexRoute: typeof WorkspaceIndexRoute
+}
+
+const WorkspaceRouteChildren: WorkspaceRouteChildren = {
+  WorkspaceChatRoute: WorkspaceChatRoute,
+  WorkspaceEmailRoute: WorkspaceEmailRoute,
+  WorkspaceMeetingsRoute: WorkspaceMeetingsRoute,
+  WorkspacePlannerRoute: WorkspacePlannerRoute,
+  WorkspaceResearchRoute: WorkspaceResearchRoute,
+  WorkspaceIndexRoute: WorkspaceIndexRoute,
+}
+
+const WorkspaceRouteWithChildren = WorkspaceRoute._addFileChildren(
+  WorkspaceRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ResponsibleAiRoute: ResponsibleAiRoute,
+  WorkspaceRoute: WorkspaceRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
