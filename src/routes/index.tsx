@@ -28,7 +28,7 @@ export const Route = createFileRoute("/")({
       { property: "og:title", content: "FlowDesk AI — Five AI tools in one workspace" },
       {
         property: "og:description",
-        content: "Five intelligent tools. One seamless workspace.",
+        content: "FlowDesk AI is an AI-powered workplace productivity assistant for email drafting, meeting summaries, task planning, research and workplace chat.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
