@@ -1,9 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-import { ToolPlaceholder } from "@/components/workspace/ToolPlaceholder";
-import { workspaceTools } from "@/lib/tools";
-
-const tool = workspaceTools[0];
+import { EmailGenerator } from "@/components/tool/EmailGenerator";
 
 export const Route = createFileRoute("/workspace/email")({
   head: () => ({
@@ -21,5 +18,5 @@ export const Route = createFileRoute("/workspace/email")({
       },
     ],
   }),
-  component: () => <ToolPlaceholder tool={tool} />,
+  component: EmailGenerator,
 });
