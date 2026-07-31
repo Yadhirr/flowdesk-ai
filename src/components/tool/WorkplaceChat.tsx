@@ -199,18 +199,19 @@ export function WorkplaceChat() {
                 }
               >
                 <span className="text-xs font-medium text-muted-foreground">
-                  {message.role === "user" ? "You" : "FlowDesk AI (not connected)"}
+                  {message.role === "user" ? "You" : "FlowDesk AI"}
                 </span>
                 <div
                   className={
                     message.role === "user"
-                      ? "max-w-[85%] min-w-0 rounded-xl bg-primary px-3.5 py-2.5 text-sm leading-relaxed text-primary-foreground break-words"
-                      : "max-w-[85%] min-w-0 rounded-xl border border-border bg-card px-3.5 py-2.5 text-sm leading-relaxed break-words"
+                      ? "max-w-[85%] min-w-0 rounded-xl bg-primary px-3.5 py-2.5 text-sm leading-relaxed text-primary-foreground break-words whitespace-pre-wrap"
+                      : "max-w-[85%] min-w-0 rounded-xl border border-border bg-card px-3.5 py-2.5 text-sm leading-relaxed break-words whitespace-pre-wrap"
                   }
                 >
                   {message.text}
                 </div>
-                {message.role === "system" ? (
+                {message.role === "assistant" ? (
+
                   <Button
                     variant="ghost"
                     size="sm"
