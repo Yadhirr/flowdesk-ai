@@ -51,6 +51,8 @@ export function WorkplaceChat() {
   const [confirmClear, setConfirmClear] = useState(false);
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [hydrated, setHydrated] = useState(false);
+  const [sendError, setSendError] = useState("");
+
 
   const composerRef = useRef<HTMLTextAreaElement | null>(null);
   const endRef = useRef<HTMLDivElement | null>(null);
