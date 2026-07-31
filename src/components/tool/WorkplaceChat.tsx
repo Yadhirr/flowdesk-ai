@@ -233,17 +233,39 @@ export function WorkplaceChat() {
           {pending ? (
             <p className="text-sm text-muted-foreground">
               <span className="sr-only">Status: </span>
-              Preparing the session reply…
+              FlowDesk AI is typing…
             </p>
           ) : null}
           <div ref={endRef} />
         </div>
 
+        {sendError ? (
+          <div
+            role="alert"
+            className="grid gap-2 rounded-lg border border-destructive/40 bg-destructive/5 p-3 text-sm sm:flex sm:items-center sm:justify-between"
+          >
+            <span className="min-w-0">{ERROR_MESSAGE}</span>
+            <Button
+              variant="outline"
+              size="sm"
+              aria-label="Retry the last message"
+              onClick={() => {
+                const last = [...messages].reverse().find((m) => m.role === "user");
+                if (!last) return;
+                setMessages((prev) => prev.filter((m) => m.id !== last.id));
+                void send(last.text);
+              }}
+            >
+              Retry
+            </Button>
+          </div>
+        ) : null}
+
         <form
           className="grid min-w-0 gap-3"
           onSubmit={(e) => {
             e.preventDefault();
-            send(draft);
+            void send(draft);
           }}
         >
           <div className="grid gap-2">
@@ -256,20 +278,33 @@ export function WorkplaceChat() {
               rows={3}
               value={draft}
               onChange={(e) => setDraft(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !e.shiftKey) {
+                  e.preventDefault();
+                  void send(draft);
+                }
+              }}
               placeholder="Describe the task you are working on…"
               aria-describedby="chat-composer-hint"
               className="min-h-24 resize-y"
             />
             <p id="chat-composer-hint" className="text-xs leading-relaxed text-muted-foreground">
-              Do not include confidential or personal information. Messages are kept in this browser
-              session only and are cleared when the session ends.
+              Press Enter to send, Shift+Enter for a new line. Do not include confidential or
+              personal information. Messages are kept in this browser session only and are cleared
+              when the session ends.
             </p>
           </div>
-          <Button type="submit" className="min-h-11 w-full sm:w-auto" disabled={!draft.trim()}>
+          <Button
+            type="submit"
+            className="min-h-11 w-full sm:w-auto"
+            disabled={!draft.trim() || pending}
+          >
             <Send className="size-4" />
-            Send message
+            {pending ? "Sending…" : "Send message"}
           </Button>
         </form>
+
+
 
         <Disclaimer>{LIMITATION_NOTICE}</Disclaimer>
       </div>
