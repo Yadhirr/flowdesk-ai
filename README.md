@@ -4,7 +4,6 @@
 
 FlowDesk AI is an AI powered workplace productivity assistant designed to reduce time spent on common repetitive tasks. The application brings email drafting, meeting-note summarisation, task planning, research analysis, and conversational workplace assistance into a single responsive workspace.
 
-> **Project status:** Four day prototype developed for the AI Skill Accelerator Programme.
 
 ## Project Overview
 
