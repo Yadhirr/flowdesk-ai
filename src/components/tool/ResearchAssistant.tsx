@@ -15,7 +15,8 @@ import {
   ResultPanel,
   ToolLayout,
 } from "@/components/tool/panels";
-import { copyText, useToolRun } from "@/components/tool/useToolRun";
+import { copyText } from "@/components/tool/useToolRun";
+import { runResearchAnalysis } from "@/lib/ai.functions";
 
 const AUDIENCES = ["General", "Team", "Manager", "Client", "Specialist"] as const;
 const DETAIL_LEVELS = ["Quick", "Standard", "Detailed"] as const;
@@ -27,11 +28,14 @@ const FOCUS_OPTIONS = [
   "Complete analysis",
 ] as const;
 
-const MIN_MATERIAL = 200;
+const MIN_MATERIAL = 100;
 const MAX_MATERIAL = 8000;
 
 const SCOPE_NOTICE =
-  "This prototype analyses only the material you provide. It does not claim to conduct live internet research. Verify important claims against the original source.";
+  "This analysis is based only on the material you supplied. AI-generated content may contain errors or omissions. Verify important claims against the original source.";
+
+const ERROR_MESSAGE =
+  "FlowDesk AI could not complete the analysis. Your source material has been preserved. Please retry.";
 
 const EXAMPLE_QUESTION =
   "Should the operations team move weekly status reporting to a shared template?";
@@ -52,93 +56,10 @@ type Result = {
   simplified: string[];
   limitations: string[];
   questions: string[];
+  sourceScope: string[];
 };
 
-function sentences(text: string) {
-  return text
-    .replace(/\s+/g, " ")
-    .split(/(?<=[.!?])\s+/)
-    .map((s) => s.trim())
-    .filter((s) => s.length > 25);
-}
-
-function paragraphs(text: string) {
-  return text
-    .split(/\n{2,}/)
-    .map((p) => p.trim())
-    .filter(Boolean);
-}
-
-function build(
-  question: string,
-  material: string,
-  audience: string,
-  detail: string,
-  focus: string,
-): Result {
-  const all = sentences(material);
-  const take = detail === "Quick" ? 2 : detail === "Detailed" ? 6 : 4;
-  const paras = paragraphs(material);
-
-  const summary = (paras.length > 1 ? paras : all)
-    .slice(0, take)
-    .map((p) => sentences(p)[0] ?? p)
-    .filter(Boolean);
-
-  const insightKeys = /(found|reported|noted|estimated|currently|trial|concern|risk|because)/i;
-  const insights = all.filter((s) => insightKeys.test(s)).slice(0, take);
-
-  const recKeys = /(should|must|need|recommend|require|propose|after|introduc)/i;
-  const recommendations = all.filter((s) => recKeys.test(s)).slice(0, take);
-
-  const audienceNote: Record<string, string> = {
-    General: "Written for a reader with no background in this topic.",
-    Team: "Framed for colleagues who already share day-to-day context.",
-    Manager: "Framed around decisions, effort and risk.",
-    Client: "Framed around outcomes and what happens next.",
-    Specialist: "Assumes subject familiarity; detail is retained rather than reduced.",
-  };
-
-  const simplified = [
-    `Your question: ${question.trim()}`,
-    audienceNote[audience],
-    summary[0]
-      ? `In plain terms, the material says: ${summary[0]}`
-      : "The material did not contain a clear opening statement to simplify.",
-    `Output focus selected: ${focus}. Detail level: ${detail}.`,
-  ];
-
-  const limitations = [
-    "Only the text you pasted was examined. Nothing was retrieved from the internet or any other system.",
-    "This prototype arranges and highlights your material; no AI model has been connected, so nothing here is inferred beyond your text.",
-    "No statistics, sources or citations have been added. If a figure appears here, it came from your material.",
-    all.length < 6
-      ? "The supplied material is short, so the analysis is necessarily shallow."
-      : "Long or mixed-topic material may dilute the sections above; consider analysing one topic at a time.",
-  ];
-
-  const questions = [
-    recommendations.length
-      ? "Which of the points above are actually agreed, and which are one person's view?"
-      : "The material contains no clear recommendation — who owns the decision?",
-    "Is the source material current, complete and from an authority you trust?",
-    "What evidence outside this material would confirm or contradict the summary?",
-    `Who else needs to review this before it is shared with a ${audience.toLowerCase()} audience?`,
-  ];
-
-  return {
-    summary: summary.length ? summary : ["No complete sentences could be extracted from the material."],
-    insights: insights.length
-      ? insights
-      : ["No findings, estimates or concerns were detectable in the supplied text."],
-    recommendations: recommendations.length
-      ? recommendations
-      : ["The supplied material does not state any recommendation or required action."],
-    simplified,
-    limitations,
-    questions,
-  };
-}
+type Status = "idle" | "loading" | "error" | "success";
 
 export function ResearchAssistant() {
   const [question, setQuestion] = useState("");
@@ -148,8 +69,10 @@ export function ResearchAssistant() {
   const [focus, setFocus] = useState<string>(FOCUS_OPTIONS[0]);
   const [submitted, setSubmitted] = useState(false);
 
-  const { status, result, setResult, error, editing, setEditing, run, clear } =
-    useToolRun<Result>();
+  const [status, setStatus] = useState<Status>("idle");
+  const [result, setResult] = useState<Result | null>(null);
+  const [editing, setEditing] = useState(false);
+
   const questionRef = useRef<HTMLInputElement | null>(null);
   const materialRef = useRef<HTMLTextAreaElement | null>(null);
 
@@ -165,7 +88,7 @@ export function ResearchAssistant() {
       : "";
   const valid = !questionError && !materialError;
 
-  const analyse = () => {
+  const analyse = async () => {
     setSubmitted(true);
     if (questionError) {
       questionRef.current?.focus();
@@ -175,7 +98,31 @@ export function ResearchAssistant() {
       materialRef.current?.focus();
       return;
     }
-    run(() => build(question, material, audience, detail, focus));
+    if (status === "loading") return;
+
+    setStatus("loading");
+    setEditing(false);
+    try {
+      const data = await runResearchAnalysis({
+        data: {
+          question: question.trim(),
+          material: material.trim(),
+          audience,
+          detail,
+          focus,
+        },
+      });
+      setResult(data);
+      setStatus("success");
+    } catch {
+      setStatus("error");
+    }
+  };
+
+  const clearOutput = () => {
+    setResult(null);
+    setEditing(false);
+    setStatus("idle");
   };
 
   const clearForm = () => {
@@ -185,7 +132,7 @@ export function ResearchAssistant() {
     setDetail(DETAIL_LEVELS[1]);
     setFocus(FOCUS_OPTIONS[0]);
     setSubmitted(false);
-    clear();
+    clearOutput();
   };
 
   const asText = (r: Result) =>
@@ -197,7 +144,8 @@ export function ResearchAssistant() {
       `Simplified explanation\n${r.simplified.join("\n")}`,
       `Limitations\n${r.limitations.join("\n")}`,
       `Questions requiring further investigation\n${r.questions.join("\n")}`,
-      `Source scope\n${SCOPE_NOTICE}`,
+      `Source scope\n${r.sourceScope.join("\n")}`,
+      SCOPE_NOTICE,
     ].join("\n\n");
 
   const list = (items: string[]) => (
@@ -211,6 +159,18 @@ export function ResearchAssistant() {
     </ul>
   );
 
+  const editableBlock = (title: string, key: keyof Result) =>
+    editing && result ? (
+      <Textarea
+        aria-label={title}
+        rows={5}
+        value={result[key].join("\n")}
+        onChange={(e) => setResult({ ...result, [key]: e.target.value.split("\n") })}
+      />
+    ) : result ? (
+      list(result[key])
+    ) : null;
+
   return (
     <div className="grid min-w-0 gap-8">
       <PageHeader
@@ -222,6 +182,44 @@ export function ResearchAssistant() {
       <ToolLayout
         form={
           <div className="grid min-w-0 gap-6">
+            <div className="grid gap-2">
+              <div
+                role="tablist"
+                aria-label="Source input method"
+                className="grid gap-2 sm:flex sm:flex-wrap"
+              >
+                <Button role="tab" aria-selected="true" size="sm" className="justify-start">
+                  Paste Text
+                </Button>
+                <Button
+                  role="tab"
+                  aria-selected="false"
+                  size="sm"
+                  variant="outline"
+                  disabled
+                  aria-describedby="research-tab-help"
+                  className="justify-start"
+                >
+                  Upload PDF — Planned enhancement
+                </Button>
+                <Button
+                  role="tab"
+                  aria-selected="false"
+                  size="sm"
+                  variant="outline"
+                  disabled
+                  aria-describedby="research-tab-help"
+                  className="justify-start"
+                >
+                  Website URL — Planned enhancement
+                </Button>
+              </div>
+              <p id="research-tab-help" className="text-xs leading-relaxed text-muted-foreground">
+                Only the Paste Text workflow is available in this prototype. PDF upload and website
+                analysis are planned enhancements and are disabled.
+              </p>
+            </div>
+
             <FormSection title="What are you researching?">
               <TextField
                 id="research-question"
@@ -281,7 +279,7 @@ export function ResearchAssistant() {
 
             <div className="grid gap-2 sm:flex sm:flex-wrap">
               <Button onClick={analyse} disabled={!valid || status === "loading"}>
-                Analyse Material
+                {status === "loading" ? "Analysing…" : "Generate Analysis"}
               </Button>
               <Button
                 variant="outline"
@@ -302,7 +300,7 @@ export function ResearchAssistant() {
             </div>
             {!valid ? (
               <p className="text-xs text-muted-foreground">
-                Analyse Material becomes available once a research question and at least{" "}
+                Generate Analysis becomes available once a research question and at least{" "}
                 {MIN_MATERIAL} characters of source material have been entered.
               </p>
             ) : null}
@@ -311,9 +309,9 @@ export function ResearchAssistant() {
         }
         results={
           status === "loading" ? (
-            <LoadingState label="Organising your material…" />
+            <LoadingState label="Analysing the supplied material..." />
           ) : status === "error" ? (
-            <ErrorState message={error} onRetry={analyse} />
+            <ErrorState message={ERROR_MESSAGE} onRetry={analyse} />
           ) : status === "success" && result ? (
             <ResultPanel
               title="Structured brief"
@@ -323,34 +321,31 @@ export function ResearchAssistant() {
                   onToggleEdit={() => setEditing(!editing)}
                   onCopy={() => copyText(asText(result))}
                   onRegenerate={analyse}
-                  onClear={clear}
+                  onClear={clearOutput}
                 />
               }
               footer={<Disclaimer>{SCOPE_NOTICE}</Disclaimer>}
             >
               <ResultBlock title="Concise summary">
-                {editing ? (
-                  <Textarea
-                    aria-label="Concise summary"
-                    rows={6}
-                    value={result.summary.join("\n")}
-                    onChange={(e) => setResult({ ...result, summary: e.target.value.split("\n") })}
-                  />
-                ) : (
-                  list(result.summary)
-                )}
+                {editableBlock("Concise summary", "summary")}
               </ResultBlock>
-              <ResultBlock title="Key insights">{list(result.insights)}</ResultBlock>
+              <ResultBlock title="Key insights">
+                {editableBlock("Key insights", "insights")}
+              </ResultBlock>
               <ResultBlock title="Recommendations supported by the supplied material">
-                {list(result.recommendations)}
+                {editableBlock("Recommendations", "recommendations")}
               </ResultBlock>
-              <ResultBlock title="Simplified explanation">{list(result.simplified)}</ResultBlock>
-              <ResultBlock title="Limitations">{list(result.limitations)}</ResultBlock>
+              <ResultBlock title="Simplified explanation">
+                {editableBlock("Simplified explanation", "simplified")}
+              </ResultBlock>
+              <ResultBlock title="Limitations">
+                {editableBlock("Limitations", "limitations")}
+              </ResultBlock>
               <ResultBlock title="Questions requiring further investigation">
-                {list(result.questions)}
+                {editableBlock("Questions requiring further investigation", "questions")}
               </ResultBlock>
-              <ResultBlock title="Source-scope notice">
-                <p className="text-muted-foreground">{SCOPE_NOTICE}</p>
+              <ResultBlock title="Source-scope reminder">
+                {editableBlock("Source-scope reminder", "sourceScope")}
               </ResultBlock>
             </ResultPanel>
           ) : (
@@ -358,7 +353,7 @@ export function ResearchAssistant() {
               <EmptyState
                 icon={BookOpenCheck}
                 title="Your brief will appear here"
-                description="Enter a research question, paste the material you want examined, then select Analyse Material for a structured brief drawn only from your own text."
+                description="Enter a research question, paste the material you want examined, then select Generate Analysis for a structured brief drawn only from your own text."
               />
               <Disclaimer>{SCOPE_NOTICE}</Disclaimer>
             </div>
