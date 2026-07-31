@@ -165,9 +165,9 @@ export function WorkplaceChat() {
               <div className="grid gap-2">
                 <h2 className="text-base font-semibold">Welcome to your workspace conversation</h2>
                 <p className="text-sm leading-relaxed text-muted-foreground">
-                  Start by describing what you are working on. This prototype keeps your messages
-                  visible for the current browser session only — nothing is stored anywhere else and
-                  no assistant responses are generated yet.
+                  Start by describing what you are working on. The conversation is kept for this
+                  browser session only — it is not stored permanently and FlowDesk AI does not
+                  remember it after the session ends.
                 </p>
               </div>
               <div className="grid gap-2">
@@ -179,9 +179,11 @@ export function WorkplaceChat() {
                     <Button
                       key={prompt}
                       variant="outline"
+                      disabled={pending}
                       className="h-auto min-h-11 w-full justify-start whitespace-normal py-2.5 text-left text-sm"
-                      onClick={() => send(prompt)}
+                      onClick={() => void send(prompt)}
                     >
+
                       {prompt}
                     </Button>
                   ))}
