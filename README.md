@@ -2,9 +2,9 @@
 
 **Five intelligent tools. One seamless workspace.**
 
-FlowDesk AI is an AI-powered workplace productivity assistant designed to reduce time spent on common repetitive tasks. The application brings email drafting, meeting-note summarisation, task planning, research analysis, and conversational workplace assistance into a single responsive workspace.
+FlowDesk AI is an AI powered workplace productivity assistant designed to reduce time spent on common repetitive tasks. The application brings email drafting, meeting-note summarisation, task planning, research analysis, and conversational workplace assistance into a single responsive workspace.
 
-> **Project status:** Four-day prototype developed for the AI Skill Accelerator Programme.
+> **Project status:** Four day prototype developed for the AI Skill Accelerator Programme.
 
 ## Project Overview
 
@@ -46,7 +46,7 @@ AI-generated content is treated as an editable draft. Users remain responsible f
 - Prioritises tasks by urgency and importance
 - Suggests practical time blocks and breaks
 - Identifies workload conflicts and tasks that may need postponement
-- Provides time-optimisation recommendations
+- Provides time optimisation recommendations
 - Does not create events in an external calendar
 
 ### 4. AI Research Assistant
@@ -60,9 +60,9 @@ AI-generated content is treated as an editable draft. Users remain responsible f
 
 ### 5. AI Workplace Chatbot
 
-- Provides a multi-turn conversational workplace assistant
+- Provides a multi turn conversational workplace assistant
 - Maintains context during the current browser session
-- Answers workplace-productivity questions
+- Answers workplace productivity questions
 - Asks clarification questions when important context is missing
 - Recommends the most suitable FlowDesk AI specialist tool
 - Does not claim permanent memory or access to private workplace systems
@@ -75,7 +75,7 @@ FlowDesk AI follows these principles:
 - Missing information is identified instead of guessed
 - Facts, names, dates, decisions, deadlines, statistics, and sources must not be fabricated
 - Confidential or highly sensitive workplace information should not be entered
-- Recommendations are separated from user-provided facts
+- Recommendations are separated from user provided facts
 - AI does not take autonomous workplace actions
 - AI does not make legal, medical, financial, disciplinary, safety, or employment decisions
 - Users can edit, copy, regenerate, and clear generated outputs
@@ -92,7 +92,6 @@ FlowDesk AI follows these principles:
 - **Browser local state/storage:** Temporary, non-sensitive session information
 - **GitHub:** Source control, code backup, and project history
 
-No separate Supabase project is required for the current prototype because the MVP does not include authentication, user accounts, permanent cloud history, or shared database records.
 
 ## Setup Instructions
 
@@ -143,25 +142,6 @@ npm run build
 npm run preview
 ```
 
-## Lovable and GitHub Workflow
-
-1. Open the FlowDesk AI project in Lovable.
-2. Use Project Settings to confirm the linked GitHub repository.
-3. Make feature changes in small, testable steps.
-4. Review each Lovable change before continuing.
-5. Verify that Lovable synchronises the updated code to GitHub.
-6. Use Lovable History and GitHub commits as recovery checkpoints.
-7. Avoid committing API keys, credentials, or confidential test content.
-
-## Current Prototype Limitations
-
-- AI runtime usage depends on available Lovable credits
-- PDF analysis is not part of the current MVP
-- Website URL analysis and live web research are not part of the current MVP
-- The chatbot stores context only for the current session
-- No user authentication or permanent cloud history is included
-- The application does not send emails or modify external calendars
-- All generated content requires human verification
 
 ## Project Structure
 
@@ -177,20 +157,6 @@ The main application routes are:
 /workspace/chat
 /responsible-ai
 ```
-
-## Testing
-
-Before demonstrating the application, verify:
-
-- All routes load successfully
-- All five tools are accessible from the workspace
-- Required-field validation works
-- Loading, success, and error states display correctly
-- Generated outputs can be copied, edited, regenerated, and cleared
-- The chatbot maintains current-session context
-- Responsible-AI notices remain visible
-- Desktop and mobile layouts do not overflow horizontally
-- Existing features continue working after each update
 
 ## Author
 
