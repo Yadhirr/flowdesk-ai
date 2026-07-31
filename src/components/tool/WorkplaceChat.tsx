@@ -79,25 +79,41 @@ export function WorkplaceChat() {
     endRef.current?.scrollIntoView({ block: "end" });
   }, [messages, hydrated]);
 
-  const send = (text: string) => {
+  const send = async (text: string) => {
     const value = text.trim();
-    if (!value) return;
-    setMessages((prev) => [...prev, { id: nextId(), role: "user", text: value }]);
+    if (!value || pending) return;
+
+    const history = [...messages, { id: nextId(), role: "user" as const, text: value }];
+    setMessages(history);
     setDraft("");
     setPending(true);
-    window.setTimeout(() => {
-      setMessages((prev) => [...prev, { id: nextId(), role: "system", text: SYSTEM_REPLY }]);
+    setSendError("");
+
+    try {
+      const { reply } = await runWorkplaceChat({
+        data: {
+          messages: history
+            .slice(-10)
+            .map((m) => ({ role: m.role, content: m.text })),
+        },
+      });
+      setMessages((prev) => [...prev, { id: nextId(), role: "assistant", text: reply }]);
+    } catch {
+      setSendError(ERROR_MESSAGE);
+    } finally {
       setPending(false);
       composerRef.current?.focus();
-    }, 700);
+    }
   };
 
   const reset = () => {
     setMessages([]);
     setDraft("");
     setPending(false);
+    setSendError("");
     composerRef.current?.focus();
   };
+
 
   const requestClear = () => {
     if (messages.length === 0) {
