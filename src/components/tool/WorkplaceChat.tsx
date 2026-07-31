@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Disclaimer } from "@/components/tool/panels";
 import { copyText } from "@/components/tool/useToolRun";
+import { runWorkplaceChat } from "@/lib/ai.functions";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -21,7 +22,10 @@ import {
 const STORAGE_KEY = "flowdesk-chat-session";
 
 const LIMITATION_NOTICE =
-  "FlowDesk AI provides workplace drafts and recommendations. It cannot send emails, access private company systems, schedule meetings or take actions on your behalf.";
+  "AI-generated content may contain inaccuracies. Review and verify generated content before using it for professional or important decisions. FlowDesk AI cannot send emails, access private company systems, schedule meetings or take actions on your behalf, and it does not remember conversations permanently.";
+
+const ERROR_MESSAGE =
+  "FlowDesk AI could not generate a response. Your conversation has been preserved. Please retry.";
 
 const STARTERS = [
   "Help me choose the correct FlowDesk AI tool.",
@@ -32,15 +36,13 @@ const STARTERS = [
 
 type Message = {
   id: string;
-  role: "user" | "system";
+  role: "user" | "assistant";
   text: string;
 };
 
-const SYSTEM_REPLY =
-  "No AI model is connected in this prototype, so there is no generated answer to show. Your message has been recorded in this session only. Assistant responses will appear here once the assistant is connected, and they will always be drafts for you to review.";
-
 let seq = 0;
 const nextId = () => `msg-${++seq}`;
+
 
 export function WorkplaceChat() {
   const [messages, setMessages] = useState<Message[]>([]);
