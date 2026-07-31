@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Disclaimer } from "@/components/tool/panels";
 import { copyText } from "@/components/tool/useToolRun";
+import { runWorkplaceChat } from "@/lib/ai.functions";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -21,7 +22,10 @@ import {
 const STORAGE_KEY = "flowdesk-chat-session";
 
 const LIMITATION_NOTICE =
-  "FlowDesk AI provides workplace drafts and recommendations. It cannot send emails, access private company systems, schedule meetings or take actions on your behalf.";
+  "AI-generated content may contain inaccuracies. Review and verify generated content before using it for professional or important decisions. FlowDesk AI cannot send emails, access private company systems, schedule meetings or take actions on your behalf, and it does not remember conversations permanently.";
+
+const ERROR_MESSAGE =
+  "FlowDesk AI could not generate a response. Your conversation has been preserved. Please retry.";
 
 const STARTERS = [
   "Help me choose the correct FlowDesk AI tool.",
@@ -32,15 +36,13 @@ const STARTERS = [
 
 type Message = {
   id: string;
-  role: "user" | "system";
+  role: "user" | "assistant";
   text: string;
 };
 
-const SYSTEM_REPLY =
-  "No AI model is connected in this prototype, so there is no generated answer to show. Your message has been recorded in this session only. Assistant responses will appear here once the assistant is connected, and they will always be drafts for you to review.";
-
 let seq = 0;
 const nextId = () => `msg-${++seq}`;
+
 
 export function WorkplaceChat() {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -49,6 +51,8 @@ export function WorkplaceChat() {
   const [confirmClear, setConfirmClear] = useState(false);
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [hydrated, setHydrated] = useState(false);
+  const [sendError, setSendError] = useState("");
+
 
   const composerRef = useRef<HTMLTextAreaElement | null>(null);
   const endRef = useRef<HTMLDivElement | null>(null);
@@ -77,25 +81,41 @@ export function WorkplaceChat() {
     endRef.current?.scrollIntoView({ block: "end" });
   }, [messages, hydrated]);
 
-  const send = (text: string) => {
+  const send = async (text: string) => {
     const value = text.trim();
-    if (!value) return;
-    setMessages((prev) => [...prev, { id: nextId(), role: "user", text: value }]);
+    if (!value || pending) return;
+
+    const history = [...messages, { id: nextId(), role: "user" as const, text: value }];
+    setMessages(history);
     setDraft("");
     setPending(true);
-    window.setTimeout(() => {
-      setMessages((prev) => [...prev, { id: nextId(), role: "system", text: SYSTEM_REPLY }]);
+    setSendError("");
+
+    try {
+      const { reply } = await runWorkplaceChat({
+        data: {
+          messages: history
+            .slice(-10)
+            .map((m) => ({ role: m.role, content: m.text })),
+        },
+      });
+      setMessages((prev) => [...prev, { id: nextId(), role: "assistant", text: reply }]);
+    } catch {
+      setSendError(ERROR_MESSAGE);
+    } finally {
       setPending(false);
       composerRef.current?.focus();
-    }, 700);
+    }
   };
 
   const reset = () => {
     setMessages([]);
     setDraft("");
     setPending(false);
+    setSendError("");
     composerRef.current?.focus();
   };
+
 
   const requestClear = () => {
     if (messages.length === 0) {
@@ -145,9 +165,9 @@ export function WorkplaceChat() {
               <div className="grid gap-2">
                 <h2 className="text-base font-semibold">Welcome to your workspace conversation</h2>
                 <p className="text-sm leading-relaxed text-muted-foreground">
-                  Start by describing what you are working on. This prototype keeps your messages
-                  visible for the current browser session only — nothing is stored anywhere else and
-                  no assistant responses are generated yet.
+                  Start by describing what you are working on. The conversation is kept for this
+                  browser session only — it is not stored permanently and FlowDesk AI does not
+                  remember it after the session ends.
                 </p>
               </div>
               <div className="grid gap-2">
@@ -159,9 +179,11 @@ export function WorkplaceChat() {
                     <Button
                       key={prompt}
                       variant="outline"
+                      disabled={pending}
                       className="h-auto min-h-11 w-full justify-start whitespace-normal py-2.5 text-left text-sm"
-                      onClick={() => send(prompt)}
+                      onClick={() => void send(prompt)}
                     >
+
                       {prompt}
                     </Button>
                   ))}
@@ -179,18 +201,19 @@ export function WorkplaceChat() {
                 }
               >
                 <span className="text-xs font-medium text-muted-foreground">
-                  {message.role === "user" ? "You" : "FlowDesk AI (not connected)"}
+                  {message.role === "user" ? "You" : "FlowDesk AI"}
                 </span>
                 <div
                   className={
                     message.role === "user"
-                      ? "max-w-[85%] min-w-0 rounded-xl bg-primary px-3.5 py-2.5 text-sm leading-relaxed text-primary-foreground break-words"
-                      : "max-w-[85%] min-w-0 rounded-xl border border-border bg-card px-3.5 py-2.5 text-sm leading-relaxed break-words"
+                      ? "max-w-[85%] min-w-0 rounded-xl bg-primary px-3.5 py-2.5 text-sm leading-relaxed text-primary-foreground break-words whitespace-pre-wrap"
+                      : "max-w-[85%] min-w-0 rounded-xl border border-border bg-card px-3.5 py-2.5 text-sm leading-relaxed break-words whitespace-pre-wrap"
                   }
                 >
                   {message.text}
                 </div>
-                {message.role === "system" ? (
+                {message.role === "assistant" ? (
+
                   <Button
                     variant="ghost"
                     size="sm"
@@ -212,17 +235,39 @@ export function WorkplaceChat() {
           {pending ? (
             <p className="text-sm text-muted-foreground">
               <span className="sr-only">Status: </span>
-              Preparing the session reply…
+              FlowDesk AI is typing…
             </p>
           ) : null}
           <div ref={endRef} />
         </div>
 
+        {sendError ? (
+          <div
+            role="alert"
+            className="grid gap-2 rounded-lg border border-destructive/40 bg-destructive/5 p-3 text-sm sm:flex sm:items-center sm:justify-between"
+          >
+            <span className="min-w-0">{ERROR_MESSAGE}</span>
+            <Button
+              variant="outline"
+              size="sm"
+              aria-label="Retry the last message"
+              onClick={() => {
+                const last = [...messages].reverse().find((m) => m.role === "user");
+                if (!last) return;
+                setMessages((prev) => prev.filter((m) => m.id !== last.id));
+                void send(last.text);
+              }}
+            >
+              Retry
+            </Button>
+          </div>
+        ) : null}
+
         <form
           className="grid min-w-0 gap-3"
           onSubmit={(e) => {
             e.preventDefault();
-            send(draft);
+            void send(draft);
           }}
         >
           <div className="grid gap-2">
@@ -235,20 +280,33 @@ export function WorkplaceChat() {
               rows={3}
               value={draft}
               onChange={(e) => setDraft(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !e.shiftKey) {
+                  e.preventDefault();
+                  void send(draft);
+                }
+              }}
               placeholder="Describe the task you are working on…"
               aria-describedby="chat-composer-hint"
               className="min-h-24 resize-y"
             />
             <p id="chat-composer-hint" className="text-xs leading-relaxed text-muted-foreground">
-              Do not include confidential or personal information. Messages are kept in this browser
-              session only and are cleared when the session ends.
+              Press Enter to send, Shift+Enter for a new line. Do not include confidential or
+              personal information. Messages are kept in this browser session only and are cleared
+              when the session ends.
             </p>
           </div>
-          <Button type="submit" className="min-h-11 w-full sm:w-auto" disabled={!draft.trim()}>
+          <Button
+            type="submit"
+            className="min-h-11 w-full sm:w-auto"
+            disabled={!draft.trim() || pending}
+          >
             <Send className="size-4" />
-            Send message
+            {pending ? "Sending…" : "Send message"}
           </Button>
         </form>
+
+
 
         <Disclaimer>{LIMITATION_NOTICE}</Disclaimer>
       </div>
