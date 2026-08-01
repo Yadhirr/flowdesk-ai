@@ -1,7 +1,14 @@
 const GATEWAY_URL = "https://ai.gateway.lovable.dev/v1/chat/completions";
 const MODEL = "google/gemini-3.6-flash";
 
-export type ChatMessage = { role: "system" | "user" | "assistant"; content: string };
+export type ContentPart =
+  | { type: "text"; text: string }
+  | { type: "file"; file: { filename: string; file_data: string } };
+
+export type ChatMessage = {
+  role: "system" | "user" | "assistant";
+  content: string | ContentPart[];
+};
 
 /**
  * Minimal server-side call to the Lovable AI Gateway. The API key never leaves

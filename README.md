@@ -5,6 +5,8 @@
 FlowDesk AI is an AI powered workplace productivity assistant designed to reduce time spent on common repetitive tasks. The application brings email drafting, meeting-note summarisation, task planning, research analysis, and conversational workplace assistance into a single responsive workspace.
 
 
+**Published application:** https://flowdeskk-ai.lovable.app
+
 ## Project Overview
 
 Professionals across industries spend significant time drafting emails, summarising information, organising schedules, and conducting research. FlowDesk AI addresses this challenge through one integrated interface containing five focused productivity tools.
@@ -50,12 +52,16 @@ AI-generated content is treated as an editable draft. Users remain responsible f
 
 ### 4. AI Research Assistant
 
-- Analyses text pasted by the user
-- Produces summaries, key insights, supported recommendations, and simplified explanations
-- Identifies limitations and questions requiring further investigation
-- Uses only the supplied source material
-- Does not claim live internet research or fabricate sources and citations
-- PDF upload and website URL analysis are planned enhancements
+- Paste-text analysis
+- PDF upload and analysis
+- Public webpage URL analysis (single page per request, via the Firecrawl connector)
+- Structured summaries
+- Key insights
+- Source-supported recommendations
+- Simplified explanations
+- Limitations
+- Further-research questions
+- Responsible AI safeguards: uses only the supplied source and does not fabricate sources or citations
 
 ### 5. AI Workplace Chatbot
 
@@ -89,6 +95,7 @@ FlowDesk AI follows these principles:
 - **Lovable built-in AI connector:** Secure AI-powered generation and analysis
 - **Lovable Cloud:** Server-side AI execution and application hosting
 - **Browser local state/storage:** Temporary, non-sensitive session information
+- **Firecrawl connector:** Secure server-side retrieval of a single public webpage
 - **GitHub:** Source control, code backup, and project history
 
 
@@ -156,6 +163,13 @@ The main application routes are:
 /workspace/chat
 /responsible-ai
 ```
+
+## Known Limitations
+
+- PDF analysis depends on whether FlowDesk AI can reliably read the uploaded document.
+- Scanned, password-protected, corrupted or unsupported PDFs may not be analysable.
+- Website analysis depends on whether the public webpage permits automated retrieval.
+- Website analysis is limited to one webpage per request and does not independently verify the source's claims.
 
 ## Author
 

@@ -77,22 +77,22 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "FlowDesk AI — Five AI tools in one workspace" },
+      { title: "FlowDesk AI | Workplace Productivity Assistant" },
       {
         name: "description",
         content:
-          "FlowDesk AI is an AI-powered workplace productivity assistant for email drafting, meeting summaries, task planning, research and workplace chat.",
+          "FlowDesk AI combines intelligent email drafting, meeting summarisation, task planning, research analysis and conversational workplace support in one responsible AI workspace.",
       },
       { name: "author", content: "FlowDesk AI" },
-      { property: "og:title", content: "FlowDesk AI — Five AI tools in one workspace" },
+      { property: "og:title", content: "FlowDesk AI | Workplace Productivity Assistant" },
       {
         property: "og:description",
-        content: "FlowDesk AI is an AI-powered workplace productivity assistant for email drafting, meeting summaries, task planning, research and workplace chat.",
+        content: "FlowDesk AI combines intelligent email drafting, meeting summarisation, task planning, research analysis and conversational workplace support in one responsible AI workspace.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:title", content: "FlowDesk AI — Five AI tools in one workspace" },
-      { name: "twitter:description", content: "FlowDesk AI is an AI-powered workplace productivity assistant for email drafting, meeting summaries, task planning, research and workplace chat." },
+      { name: "twitter:title", content: "FlowDesk AI | Workplace Productivity Assistant" },
+      { name: "twitter:description", content: "FlowDesk AI combines intelligent email drafting, meeting summarisation, task planning, research analysis and conversational workplace support in one responsible AI workspace." },
       { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/beb023d8-520d-466c-a9c3-1231d09a5583/id-preview-1118efba--7148a90f-b1e5-465e-8663-4e13cbb1811d.lovable.app-1785378061575.png" },
       { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/beb023d8-520d-466c-a9c3-1231d09a5583/id-preview-1118efba--7148a90f-b1e5-465e-8663-4e13cbb1811d.lovable.app-1785378061575.png" },
     ],

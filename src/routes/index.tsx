@@ -19,16 +19,16 @@ import { workspaceTools } from "@/lib/tools";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "FlowDesk AI — Five AI tools in one workspace" },
+      { title: "FlowDesk AI | Workplace Productivity Assistant" },
       {
         name: "description",
         content:
-          "FlowDesk AI is an AI-powered workplace productivity assistant for email drafting, meeting summaries, task planning, research and workplace chat.",
+          "FlowDesk AI combines intelligent email drafting, meeting summarisation, task planning, research analysis and conversational workplace support in one responsible AI workspace.",
       },
-      { property: "og:title", content: "FlowDesk AI — Five AI tools in one workspace" },
+      { property: "og:title", content: "FlowDesk AI | Workplace Productivity Assistant" },
       {
         property: "og:description",
-        content: "FlowDesk AI is an AI-powered workplace productivity assistant for email drafting, meeting summaries, task planning, research and workplace chat.",
+        content: "FlowDesk AI combines intelligent email drafting, meeting summarisation, task planning, research analysis and conversational workplace support in one responsible AI workspace.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
